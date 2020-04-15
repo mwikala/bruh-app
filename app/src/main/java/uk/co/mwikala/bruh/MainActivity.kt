@@ -1,6 +1,7 @@
 package uk.co.mwikala.bruh
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -19,7 +20,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dks: Dks
     private lateinit var mediaPlayer: MediaPlayer
     private val recordAudioPermission: Int = 1
+    private var isRunning: Boolean = false
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -54,6 +57,21 @@ class MainActivity : AppCompatActivity() {
         btn_start_dks.setOnClickListener {
             checkPerms()
         }
+
+
+        btn_start_dks.setOnClickListener {
+            if (isRunning) {
+                btn_start_dks.setBackgroundColor(ContextCompat.getColor(application, R.color.design_default_color_primary))
+                btn_start_dks.text = "Start"
+                dks.closeSpeechOperations()
+                isRunning = false
+            } else {
+                btn_start_dks.setBackgroundColor(Color.RED)
+                btn_start_dks.text = "Stop"
+                dks.startSpeechRecognition()
+                isRunning = true
+            }
+        }
     }
 
     private fun playBruhAudio(context: Context) {
@@ -81,11 +99,6 @@ class MainActivity : AppCompatActivity() {
     private fun startSpeechRecognition() {
         dks.startSpeechRecognition()
         Toast.makeText(application, "Good to go!", Toast.LENGTH_SHORT).show()
-        btn_start_dks.text = "Stop"
-        btn_start_dks.setBackgroundColor(Color.RED)
-        btn_start_dks.setOnClickListener {
-            dks.closeSpeechOperations()
-        }
     }
 
     override fun onRequestPermissionsResult(
